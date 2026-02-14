@@ -9,10 +9,16 @@ class NetworkService {
 
   NetworkService._internal() {
     InternetConnection().onStatusChange.listen((InternetStatus status) {
-      _streamController.add(status == InternetStatus.connected);
+      _statusController.add(status == InternetStatus.connected);
     });
   }
-  final StreamController<bool> _streamController = StreamController.broadcast();
 
-  Stream<bool> get connectionStream => _streamController.stream;
+  final StreamController<bool> _statusController =
+      StreamController<bool>.broadcast();
+
+  Stream<bool> get connectionStream => _statusController.stream;
+
+  Future<bool> get isConnected async {
+    return await InternetConnection().hasInternetAccess;
+  }
 }

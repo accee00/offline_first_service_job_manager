@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'bloc/network_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:offline_first_service_job_manager/core/riverpod/network_checker_pod.dart';
 
 void main() {
-  runApp(BlocProvider(create: (_) => NetworkBloc(), child: const MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -60,16 +59,17 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class _ConnectivityBanner extends StatelessWidget {
+class _ConnectivityBanner extends ConsumerWidget {
   const _ConnectivityBanner();
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<NetworkBloc, NetworkState>(
-      buildWhen: (prev, curr) => prev.status != curr.status,
-      builder: (context, state) {
-        final isOnline = state.isOnline;
-        final isInitial = state.status == NetworkStatus.initial;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final networkAsync = ref.watch(networkStatusProvider);
+
+    return networkAsync.when(
+      data: (status) {
+        final isOnline = status == NetworkStatus.online;
+        final isInitial = status == NetworkStatus.initial;
 
         return AnimatedContainer(
           duration: const Duration(milliseconds: 400),
@@ -114,6 +114,8 @@ class _ConnectivityBanner extends StatelessWidget {
           ),
         );
       },
+      loading: () => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
     );
   }
 }
@@ -207,22 +209,28 @@ class _Body extends StatelessWidget {
   }
 }
 
-class _StatusCard extends StatelessWidget {
+class _StatusCard extends ConsumerWidget {
   const _StatusCard();
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<NetworkBloc, NetworkState>(
-      builder: (context, state) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final networkAsync = ref.watch(networkStatusProvider);
+
+    return networkAsync.when(
+      data: (status) {
+        final isOnline = status == NetworkStatus.online;
+        final isOffline = status == NetworkStatus.offline;
+        final isInitial = status == NetworkStatus.initial;
+
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: const Color(0xFF1A1A1A),
             border: Border.all(
-              color: state.isOnline
-                  ? Color(0xFF69FF47).withAlpha((0.3 * 255).toInt())
-                  : state.isOffline
+              color: isOnline
+                  ? const Color(0xFF69FF47).withAlpha((0.3 * 255).toInt())
+                  : isOffline
                   ? const Color(0xFFFF3D57).withAlpha((0.3 * 255).toInt())
                   : const Color(0xFF333333),
               width: 1,
@@ -245,14 +253,14 @@ class _StatusCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(
-                    state.isOnline
+                    isOnline
                         ? Icons.wifi_rounded
-                        : state.isOffline
+                        : isOffline
                         ? Icons.wifi_off_rounded
                         : Icons.wifi_find_rounded,
-                    color: state.isOnline
+                    color: isOnline
                         ? const Color(0xFF69FF47)
-                        : state.isOffline
+                        : isOffline
                         ? const Color(0xFFFF3D57)
                         : const Color(0xFF757575),
                     size: 28,
@@ -262,9 +270,9 @@ class _StatusCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        state.status == NetworkStatus.initial
+                        isInitial
                             ? 'Initialising...'
-                            : state.isOnline
+                            : isOnline
                             ? 'Internet Available'
                             : 'No Internet Access',
                         style: const TextStyle(
@@ -283,6 +291,8 @@ class _StatusCard extends StatelessWidget {
           ),
         );
       },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
     );
   }
 }

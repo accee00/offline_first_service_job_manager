@@ -39,6 +39,10 @@ dependencies:
   flutter_riverpod:
   fpdart:
   go_router:
+  drift: ^2.31.0
+  sqlite3_flutter_libs: ^0.5.41
+  path_provider: ^2.1.5
+  path: ^1.9.1
 
 dev_dependencies:
   flutter_test:
@@ -54,6 +58,7 @@ dev_dependencies:
   custom_lint:
   build_runner:
   riverpod_generator:
+  drift_dev: ^2.31.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

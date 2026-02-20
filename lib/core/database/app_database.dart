@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:offline_first_service_job_manager/core/database/tables/user_table.dart';
+import 'package:offline_first_service_job_manager/core/database/tables/job_table.dart';
+import 'package:offline_first_service_job_manager/core/database/tables/sync_queue_table.dart';
 import 'package:offline_first_service_job_manager/core/enums/sync_enum.dart';
 import 'package:offline_first_service_job_manager/features/auth/model/user_model.dart';
 import 'package:path_provider/path_provider.dart';
@@ -10,7 +12,7 @@ import 'package:path/path.dart' as p;
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [Users])
+@DriftDatabase(tables: [Users, Jobs, SyncQueue])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 

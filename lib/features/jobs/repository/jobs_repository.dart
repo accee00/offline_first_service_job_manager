@@ -5,6 +5,7 @@ import 'package:offline_first_service_job_manager/features/jobs/repository/jobs_
 import 'package:offline_first_service_job_manager/features/jobs/repository/jobs_remote_repository.dart';
 import 'package:offline_first_service_job_manager/core/riverpod/network_checker_pod.dart';
 import 'package:offline_first_service_job_manager/core/enums/sync_enum.dart';
+import 'package:offline_first_service_job_manager/core/sync/sync_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'dart:convert';
@@ -21,13 +22,9 @@ class JobsRepository {
     final networkStatus = await _ref.read(networkStatusProvider.future);
 
     if (networkStatus == NetworkStatus.online) {
-      try {
-        final remoteJobs = await _remote.fetchJobs();
-        await _local.saveJobs(remoteJobs);
-        return remoteJobs;
-      } catch (e) {
-        return _local.getAllJobs();
-      }
+      // Trigger a sync pull/push
+      await _ref.read(syncManagerProvider).syncAll();
+      return _local.getAllJobs();
     } else {
       return _local.getAllJobs();
     }

@@ -7,6 +7,7 @@ import 'package:offline_first_service_job_manager/core/database/tables/job_table
 import 'package:offline_first_service_job_manager/core/database/tables/sync_queue_table.dart';
 import 'package:offline_first_service_job_manager/core/enums/sync_enum.dart';
 import 'package:offline_first_service_job_manager/features/auth/model/user_model.dart';
+import 'package:offline_first_service_job_manager/features/jobs/model/jobs_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 

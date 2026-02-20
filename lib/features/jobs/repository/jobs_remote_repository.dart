@@ -9,6 +9,11 @@ class JobsRemoteRepository {
     return _mockRemoteDb.values.toList();
   }
 
+  Future<JobModel?> fetchJobById(String id) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return _mockRemoteDb[id];
+  }
+
   Future<JobModel> createJob(JobModel job) async {
     await Future.delayed(const Duration(milliseconds: 500));
     final newJob = job.copyWith(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:offline_first_service_job_manager/core/riverpod/network_checker_pod.dart';
+import 'package:offline_first_service_job_manager/features/jobs/screens/jobs_list_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -42,17 +43,56 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _tabIndex = 0;
+
+  @override
   Widget build(BuildContext context) {
+    final screens = [const JobsListScreen(), const _NetworkMonitorScreen()];
+
     return Scaffold(
+      backgroundColor: const Color(0xFF0D0D0D),
       body: Column(
         children: [
           const _ConnectivityBanner(),
-
-          Expanded(child: _Body()),
+          Expanded(child: screens[_tabIndex]),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        backgroundColor: const Color(0xFF111111),
+        selectedIndex: _tabIndex,
+        onDestinationSelected: (i) => setState(() => _tabIndex = i),
+        indicatorColor: const Color(0xFF00E5FF).withAlpha(40),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(
+              Icons.work_outline_rounded,
+              size: 20,
+              color: Color(0xFF555555),
+            ),
+            selectedIcon: Icon(
+              Icons.work_rounded,
+              size: 20,
+              color: Color(0xFF00E5FF),
+            ),
+            label: 'Jobs',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.wifi_outlined, size: 20, color: Color(0xFF555555)),
+            selectedIcon: Icon(
+              Icons.wifi_rounded,
+              size: 20,
+              color: Color(0xFF00E5FF),
+            ),
+            label: 'Network',
+          ),
         ],
       ),
     );
@@ -182,7 +222,9 @@ class _PulsingDotState extends State<_PulsingDot>
   }
 }
 
-class _Body extends StatelessWidget {
+class _NetworkMonitorScreen extends StatelessWidget {
+  const _NetworkMonitorScreen();
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -292,7 +334,7 @@ class _StatusCard extends ConsumerWidget {
         );
       },
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (error, stack) => const SizedBox.shrink(),
     );
   }
 }

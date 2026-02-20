@@ -13,7 +13,7 @@ SyncManager syncManager(Ref ref) {
   // Automatically start sync when coming back online
   ref.listen(networkStatusProvider, (previous, next) {
     if (next.value == NetworkStatus.online) {
-      manager.processSyncQueue();
+      manager.syncAll();
     }
   });
 
